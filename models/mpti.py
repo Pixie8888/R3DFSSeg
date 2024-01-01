@@ -39,38 +39,6 @@ class BaseLearner(nn.Module):
                 x = F.relu(x)
         return x
 
-def compute_entropy(prob, num_cls):
-    '''
-    :param prob:
-    :param num_cls:
-    :return: -sum(p*log(p)) / log(c). normalize to (0,1)
-    '''
-    entropy = 0.
-    for p in prob:
-        if p != 0:
-            entropy += p * torch.log(p)
-        else:
-            continue
-    entropy = - entropy / torch.log(torch.tensor(num_cls, dtype=torch.float))
-    return entropy
-
-
-def Global2Episode_label(global_label, episode_class):
-    ''' switch from global label to episode label
-    :param global_label: (n, ) label is the global label ([bg,1,2,5,6,7,9], [0,1,2,3,4,5,6])
-    :param episode_class: [way1, way2] class idx in the shunxu training dataset. No bg!
-    :return: convert global_label to episdoe_label. Only contain [bg, way1, way2]
-    '''
-    episode_label = torch.zeros_like(global_label) # (n,). initialized as all bg.
-    nway = len(episode_class)
-    for way in range(nway):
-        cls = episode_class[way] + 1 # class idx in the global train dataset
-        mask = global_label == cls
-        episode_label[mask] = way+1
-
-        # episode_label = torch.where(global_label == cls, torch.tensor(way+1, device=global_label.device), episode_label)
-    return episode_label
-
 
 
 

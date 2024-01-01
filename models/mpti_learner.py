@@ -81,7 +81,7 @@ class MPTILearner_V3(object):
 
 
 
-    def test(self, data, sampled_classes, step=None, path=None):
+    def test(self, data, sampled_classes, step=None, path=None, eval=False):
         """
         Args:
             support_x: support point clouds with shape (n_way, k_shot, in_channels, num_points)
@@ -93,7 +93,7 @@ class MPTILearner_V3(object):
         self.model.eval()
 
         with torch.no_grad():
-            logits, loss = self.model(support_x, support_y, query_x, query_y, gt_support_y=gt_support_y, sampled_classes=sampled_classes, step=step, path=path, support_flag=None)
+            logits, loss = self.model(support_x, support_y, query_x, query_y, gt_support_y=gt_support_y, sampled_classes=sampled_classes, step=step, path=path, support_flag=None, eval=eval)
             # logits, loss, clean_flag = self.model(support_x, support_y, query_x, query_y, gt_support_y=gt_support_y, sampled_classes=sampled_classes)
             pred = F.softmax(logits, dim=1).argmax(dim=1)
             correct = torch.eq(pred, query_y).sum().item()

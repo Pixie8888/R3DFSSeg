@@ -72,7 +72,7 @@ def evaluate_metric(logger, pred_labels_list, gt_labels_list, label2class_list, 
     return mean_IoU
 
 
-def test_few_shot(test_loader, learner, logger, test_classes, path=None):
+def test_few_shot(test_loader, learner, logger, test_classes, path=None, eval=False):
 
     total_loss = 0
 
@@ -88,7 +88,7 @@ def test_few_shot(test_loader, learner, logger, test_classes, path=None):
         if torch.cuda.is_available():
             data = cast_cuda(data)
 
-        query_pred, loss, accuracy = learner.test(data, sampled_classes, batch_idx, path=path) # path to save test record
+        query_pred, loss, accuracy = learner.test(data, sampled_classes, batch_idx, path=path, eval=eval) # path to save test record
         # query_pred, loss, accuracy = learner.test(data, sampled_classes)
         total_loss += loss.detach().item()
 
@@ -149,7 +149,7 @@ def eval(args, test_data_path, clean_data_path, ReturnCluster, noise_ratio, nois
         path = os.path.join(args.model_checkpoint_path, '{}_{:.3f}_test_record'.format(noise_type, noise_ratio))
     else:
         path = None
-    test_loss, mean_IoU = test_few_shot(TEST_LOADER, learner, logger, TEST_CLASSES, path=path)
+    test_loss, mean_IoU = test_few_shot(TEST_LOADER, learner, logger, TEST_CLASSES, path=path, eval=True)
 
     logger.cprint('\n=====[TEST] Loss: %.4f | Mean IoU: %f =====\n' %(test_loss, mean_IoU))
 
